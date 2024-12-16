@@ -6,9 +6,9 @@
 class sensor
 {
 private:
-    int temperature = 0;
-    int windSpeed = 0;
-    int humidity = 0;
+    float temperature = 0;
+    float windSpeed = 0;
+    float humidity = 0;
 public:
     // Calc
     int calcMinValue();

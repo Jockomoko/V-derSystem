@@ -16,6 +16,9 @@ void clear_screen() {
 // Include your sensor class definition
 #include "sensor.cpp"
 #include "sensor.h"
+
+std::vector<float> calcAverages (std::vector<sensor> input); 
+
 // Mutex for thread safety
 std::mutex sensor_mutex;
 void generateTemp(sensor &newSen)
@@ -23,7 +26,7 @@ void generateTemp(sensor &newSen)
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(5, 35);
-    int temp = dis(gen);
+    float temp = dis(gen);
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setTemp(temp);
@@ -34,7 +37,7 @@ void generateHuminity(sensor &newSen)
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(30, 100);
-    int humidity = dis(gen);
+    float humidity = dis(gen);
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setHumidity(humidity);
@@ -45,7 +48,7 @@ void generateWindSpeed(sensor &newSen)
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, 25);
-    int windSpeed = dis(gen);
+    float windSpeed = dis(gen);
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setWSpeed(windSpeed);
@@ -54,6 +57,8 @@ void generateWindSpeed(sensor &newSen)
 int main()
 {
     std::vector<sensor> sensors;
+
+    
     
     // Create threads for data generation
     for(int i = 0; i < 3; i++)
@@ -77,7 +82,16 @@ int main()
 
     //system("cls");
 
+    std::vector<float> averages = calcAverages(sensors);
+
+    std::cout << "\nAVERAGES\n"
+        << "Temp: " << averages[0] << std::endl
+        << "Speed: " << averages[1] << std::endl
+        << "Humidity: " << averages[2] << std::endl;
+
+    
     std::cout << "\nFinal Sensor Data:\n";
+
     for(auto &s : sensors)
     {
         clear_screen();
@@ -85,11 +99,42 @@ int main()
         std::cout << "Humidity: " << s.getHumidity() << "%\n";
         std::cout << "Wind Speed: " << s.getWSpeed() << " m/s\n";
         std::cout << "-------------------\n";
-    }
+    };
+    
+
     std::cin.get();
     //std::cout << "\nFinal Sensor Data:\n";
     //std::cout << "Temperature: " << s1.getTemp() << "°C\n";
     //std::cout << "Humidity: " << s1.getHumidity() << "%\n";
     //std::cout << "Wind Speed: " << s1.getWSpeed() << " m/s\n";
+
     return 0; 
 }
+
+std::vector<float> calcAverages (std::vector<sensor> input) {
+    // takes a vector of sensors as input
+    std::vector<float> returnVector;
+
+    // averages each type of value in each sensor
+    float a = 0;
+    for (int i = 0; i < input.size(); i++) {
+        a += input[i].getTemp();
+    };
+    returnVector.push_back(a / input.size());
+    a = 0;
+
+    for (int i = 0; i < input.size(); i++) {
+        a += input[i].getWSpeed();
+    };
+    returnVector.push_back(a / input.size());
+    a = 0;
+
+    for (int i = 0; i < input.size(); i++) {
+        a += input[i].getHumidity();
+    };
+    returnVector.push_back(a / input.size());
+    a = 0;
+
+    // returns a vector<float> with the average values
+    return returnVector;
+};
