@@ -14,6 +14,7 @@ void clear_screen() {
 }
 
 // Include your sensor class definition
+#include "sensor.cpp"
 #include "sensor.h"
 // Mutex for thread safety
 std::mutex sensor_mutex;

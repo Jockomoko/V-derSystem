@@ -1,4 +1,8 @@
-#include <iostream>
+//#include <iostream>
+#if !defined(SENSOR_H)
+#define SENSOR_H
+
+
 class sensor
 {
 private:
@@ -19,3 +23,5 @@ public:
     void setWSpeed(int wSpeed);
     void setHumidity(int humid);
 };
+
+#endif // SENSOR_H
