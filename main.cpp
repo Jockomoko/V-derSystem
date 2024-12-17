@@ -24,6 +24,7 @@ std::vector<float> calcMaxValues (std::vector<sensor> input);
 
 // Mutex for thread safety
 std::mutex sensor_mutex;
+std::mutex cout_mutex;
 void generateTemp(sensor &newSen)
 {
     std::random_device rd;
@@ -33,7 +34,10 @@ void generateTemp(sensor &newSen)
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setTemp(temp);
-    std::cout << "Generated Temperature: " << temp << "°C" <<std::endl;
+    {
+        std::lock_guard<std::mutex> cout_lock(cout_mutex);
+        std::cout << "\033[7;1\033[KGathered Temperature: " << temp << " C" <<std::endl;
+    }
 }
 void generateHuminity(sensor &newSen)
 {
@@ -44,7 +48,10 @@ void generateHuminity(sensor &newSen)
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setHumidity(humidity);
-    std::cout << "Generated Humidity: " << humidity << "%" <<std::endl;
+    {
+        std::lock_guard<std::mutex> cout_lock(cout_mutex);
+        std::cout << "\033[9;1H\033[KGathered Humidity: " << humidity << " %" <<std::endl;
+    }
 }
 void generateWindSpeed(sensor &newSen)
 {
@@ -55,7 +62,10 @@ void generateWindSpeed(sensor &newSen)
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setWSpeed(windSpeed);
-    std::cout <<"Generated Wind Speed: " << windSpeed << " m/s" <<std::endl;
+   {
+        std::lock_guard<std::mutex> cout_lock(cout_mutex);
+        std::cout <<"\033[8;1H\033[KGathered Wind Speed: " << windSpeed << " m/ s" <<std::endl;
+   }
 }
 
 void generateData(std::vector<sensor> &sensors)
@@ -63,8 +73,11 @@ void generateData(std::vector<sensor> &sensors)
     sensor s1;
     while(keepRunning)
     {
-        clear_screen();
-        std::cout <<"Gathering data...\n";
+        //clear_screen();
+        {
+            std::lock_guard<std::mutex> cout_lock(cout_mutex);
+            std::cout <<"\033[6;1H\033[KGathering data...\n";
+        }
         generateTemp(s1);
         generateHuminity(s1);
         generateWindSpeed(s1);
@@ -83,39 +96,53 @@ void printStatitics(std::vector<sensor> &sensors)
     std::this_thread::sleep_for(std::chrono::seconds(5));
     std::vector<float> averages = calcAverages(sensors);
 
-
-    //std::cout << "\nAVERAGES\n"
-    std::cout <<"Average Temp: " << averages[0] << std::endl
-        << "Average WindSpeed: " << averages[1] << std::endl
-        << "Average Humidity: " << averages[2] << std::endl;
-
+    {
+    std::lock_guard<std::mutex> cout_lock(cout_mutex);
+    std::cout <<"\033[11;1H\033[KAverage Temp: " << averages[0] <<" C" << std::endl
+        << "\033[15;1H\033[KAverage WindSpeed: " << averages[1] <<" m/ s" << std::endl
+        << "\033[19;1H\033[KAverage Humidity: " << averages[2] <<" %" << std::endl;
+    }
     std::vector<float> minValues = calcMinValues(sensors);
 
-    //std::cout << "\nMIN VALUES\n"
-    std::cout << "Min Temp: " << minValues[0] <<" C" << std::endl
-        << "Min WindSpeed: " << minValues[1] <<" m/ s" << std::endl
-        << "Min Humidity: " << minValues[2] <<" %" << std::endl;
+    {
+    std::lock_guard<std::mutex> cout_lock(cout_mutex);
+    std::cout << "\033[12;1H\033[KMin Temp: " << minValues[0] <<" C" << std::endl
+        << "\033[16;1H\033[KMin WindSpeed: " << minValues[1] <<" m/ s" << std::endl
+        << "\033[20;1H\033[KMin Humidity: " << minValues[2] <<" %" << std::endl;
 
-
+    }
     std::vector<float> maxValues = calcMaxValues(sensors);
 
-    //std::cout << "\nMAX VALUES\n"
-    std::cout << "Max Temp: " << maxValues[0] <<" C" << std::endl
-        << "Max WindSpeed: " << maxValues[1] <<" m/ s" << std::endl
-        << "Max Humidity: " << maxValues[2] <<" %" << std::endl;
-        //std::this_thread::sleep_for(std::chrono::seconds(5));
+    {
+    std::lock_guard<std::mutex> cout_lock(cout_mutex);
+    std::cout << "\033[13;1H\033[KMax Temp: " << maxValues[0] <<" C" << std::endl
+        << "\033[17;1H\033[KMax WindSpeed: " << maxValues[1] <<" m/ s" << std::endl
+        << "\033[21;1H\033[KMax Humidity: " << maxValues[2] <<" %" << std::endl;
     }
+    }
+}
+
+void waitForPress()
+{
+    std::cin.get();
+    keepRunning = false;
 }
 int main()
 {
     std::vector<sensor> sensors;
+    std::cout <<"Welcome to the Weather Station!\n";
+    std::cout <<"Press any key to stop the program\n";
+    std::cout <<"This program will gather data every 0.5 seconds\n" 
+                 "and print statistics every 5 seconds\n\n";
     std::thread generatingData(generateData, std::ref(sensors));
     std::thread printStats(printStatitics, std::ref(sensors));
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-    keepRunning = false;
+    std::thread waitForkeyPress(waitForPress);
+    //std::this_thread::sleep_for(std::chrono::seconds(10));
+    //keepRunning = false;
 
     generatingData.join();
     printStats.join();
+    waitForkeyPress.join();
     
     
     // Create threads for data generation
@@ -176,12 +203,12 @@ int main()
     };*/
     
 
-    std::cout << "Final Sensor Data:" <<std::endl;
+    std::cout << "\033[23;1H\033[KFinal Sensor Data:" <<std::endl;
     sensor lastSensor = sensors.back();
     
-    std::cout <<  "Temperature: " << lastSensor.getTemp() << "°C" <<std::endl;
-    std::cout <<  "Humidity: " << lastSensor.getHumidity() << "%" <<std::endl;
-    std::cout <<  "Wind Speed: " << lastSensor.getWSpeed() << " m/s" <<std::endl;
+    std::cout <<  "\033[24;1H\033[KTemperature: " << lastSensor.getTemp() << " C" <<std::endl;
+    std::cout <<  "\033[25;1H\033[KHumidity: " << lastSensor.getHumidity() << " %" <<std::endl;
+    std::cout <<  "\033[26;1H\033[KWind Speed: " << lastSensor.getWSpeed() << " m/ s" <<std::endl;
 
     std::cin.get();
 
