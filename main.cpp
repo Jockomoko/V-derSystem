@@ -4,6 +4,7 @@
 #include <random>
 #include <mutex>
 #include <cstdlib>
+#include "sensor.h"
 
 void clear_screen() {
 #ifdef _WIN32
@@ -12,10 +13,6 @@ void clear_screen() {
     system("clear"); // macOS and Linux
 #endif
 }
-
-// Include your sensor class definition
-#include "sensor.cpp"
-#include "sensor.h"
 
 std::vector<float> calcAverages (std::vector<sensor> input); 
 std::vector<float> calcMinValues (std::vector<sensor> input);
@@ -66,7 +63,7 @@ int main()
     for(int i = 0; i < 3; i++)
     {
         sensor s1;
-        std::cout << "Generating data...\n";
+        std::cout << "Gathering data...\n";
     std::thread tempThread(generateTemp, std::ref(s1));
     std::thread humidThread(generateHuminity, std::ref(s1));
     std::thread windThread(generateWindSpeed, std::ref(s1));

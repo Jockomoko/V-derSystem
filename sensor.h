@@ -9,19 +9,22 @@ private:
     float temperature = 0;
     float windSpeed = 0;
     float humidity = 0;
+
 public:
     // Calc
-    int calcMinValue();
-    int calcMaxValue();
-    int calcAverageValue();
+    float calcMinValue();
+    float calcMaxValue();
+    float calcAverageValue();
+
     // Getters
-    int getTemp();
-    int getWSpeed();
-    int getHumidity();
-    // Setter
-    void setTemp(int temp);
-    void setWSpeed(int wSpeed);
-    void setHumidity(int humid);
+    float getTemp();
+    float getWSpeed();
+    float getHumidity();
+
+    // Setters
+    void setTemp(float temp);
+    void setWSpeed(float wSpeed);
+    void setHumidity(float humid);
 };
 
 #endif // SENSOR_H

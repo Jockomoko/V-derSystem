@@ -1,40 +1,40 @@
 #include "sensor.h"
 // Calc
-int sensor::calcMinValue()
+float sensor::calcMinValue()
 {
     return temperature;
 }
-int sensor::calcMaxValue()
+float sensor::calcMaxValue()
 {
     return temperature;
 }
-int sensor::calcAverageValue()
+float sensor::calcAverageValue()
 {
     return temperature;
 }
-// Getters
-int sensor::getTemp()
+
+float sensor::getTemp()
 {
-    return temperature;
+    return temperature; // Return as float
 }
-int sensor::getWSpeed()
+float sensor::getWSpeed()
 {
-    return windSpeed;
+    return windSpeed; // Return as float
 }
-int sensor::getHumidity()
+float sensor::getHumidity()
 {
-    return humidity;
+    return humidity; // Return as float
 }
-// Setters
-void sensor::setTemp(int temp)
+
+void sensor::setTemp(float temp)
 {
-    temperature = temp;
+    temperature = temp; // Accept as float
 }
-void sensor::setWSpeed(int wSpeed)
+void sensor::setWSpeed(float wSpeed)
 {
-    windSpeed = wSpeed;
+    windSpeed = wSpeed; // Accept as float
 }
-void sensor::setHumidity(int humid)
+void sensor::setHumidity(float humid)
 {
-    humidity = humid;
+    humidity = humid; // Accept as float
 }
