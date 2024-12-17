@@ -4,6 +4,10 @@
 #include <random>
 #include <mutex>
 #include <cstdlib>
+#include <atomic>
+#include "sensor.h"
+
+std::atomic<bool> keepRunning(true);
 
 void clear_screen() {
 #ifdef _WIN32
@@ -13,9 +17,6 @@ void clear_screen() {
 #endif
 }
 
-// Include your sensor class definition
-#include "sensor.cpp"
-#include "sensor.h"
 
 std::vector<float> calcAverages (std::vector<sensor> input); 
 std::vector<float> calcMinValues (std::vector<sensor> input);
@@ -56,17 +57,72 @@ void generateWindSpeed(sensor &newSen)
     newSen.setWSpeed(windSpeed);
     std::cout << "Generated Wind Speed: " << windSpeed << " m/s\n";
 }
+
+void generateData(std::vector<sensor> &sensors)
+{
+    sensor s1;
+    while(keepRunning)
+    {
+        clear_screen();
+        std::cout <<"Gathering data...\n";
+        generateTemp(s1);
+        generateHuminity(s1);
+        generateWindSpeed(s1);
+        {
+            std::lock_guard<std::mutex> lock(sensor_mutex);
+            sensors.push_back(s1);
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+}
+
+void printStatitics(std::vector<sensor> &sensors)
+{
+    while(keepRunning)
+    {
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::vector<float> averages = calcAverages(sensors);
+
+
+    std::cout << "\nAVERAGES\n"
+        << "Temp: " << averages[0] << std::endl
+        << "Speed: " << averages[1] << std::endl
+        << "Humidity: " << averages[2] << std::endl;
+
+    std::vector<float> minValues = calcMinValues(sensors);
+
+    std::cout << "\nMIN VALUES\n"
+        << "Temp: " << minValues[0] <<" C" << std::endl
+        << "Speed: " << minValues[1] <<" m/ s"<< std::endl
+        << "Humidity: " << minValues[2] <<" %" << std::endl;
+
+
+    std::vector<float> maxValues = calcMaxValues(sensors);
+
+    std::cout << "\nMAX VALUES\n"
+        << "Temp: " << maxValues[0] <<" C" << std::endl
+        << "Speed: " << maxValues[1] <<" m/ s"<< std::endl
+        << "Humidity: " << maxValues[2] <<" %" << std::endl;
+
+    }
+}
 int main()
 {
     std::vector<sensor> sensors;
+    std::thread generatingData(generateData, std::ref(sensors));
+    std::thread printStats(printStatitics, std::ref(sensors));
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    keepRunning = false;
 
+    generatingData.join();
+    printStats.join();
     
     
     // Create threads for data generation
-    for(int i = 0; i < 3; i++)
+    /*for(int i = 0; i < 3; i++)
     {
         sensor s1;
-        std::cout << "Generating data...\n";
+        std::cout << "Gathering data...\n";
     std::thread tempThread(generateTemp, std::ref(s1));
     std::thread humidThread(generateHuminity, std::ref(s1));
     std::thread windThread(generateWindSpeed, std::ref(s1));
