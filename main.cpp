@@ -33,7 +33,7 @@ void generateTemp(sensor &newSen)
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setTemp(temp);
-    std::cout << "Generated Temperature: " << temp << "°C\n";
+    std::cout << "\033[2;1HGenerated Temperature: " << temp << "°C\n";
 }
 void generateHuminity(sensor &newSen)
 {
@@ -44,7 +44,7 @@ void generateHuminity(sensor &newSen)
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setHumidity(humidity);
-    std::cout << "Generated Humidity: " << humidity << "%\n";
+    std::cout << "\033[4;1HGenerated Humidity: " << humidity << "%\n";
 }
 void generateWindSpeed(sensor &newSen)
 {
@@ -55,7 +55,7 @@ void generateWindSpeed(sensor &newSen)
     // Protect access to the sensor object
     std::lock_guard<std::mutex> lock(sensor_mutex);
     newSen.setWSpeed(windSpeed);
-    std::cout << "Generated Wind Speed: " << windSpeed << " m/s\n";
+    std::cout <<"\033[3;1HGenerated Wind Speed: " << windSpeed << " m/s\n";
 }
 
 void generateData(std::vector<sensor> &sensors)
@@ -63,8 +63,8 @@ void generateData(std::vector<sensor> &sensors)
     sensor s1;
     while(keepRunning)
     {
-        clear_screen();
-        std::cout <<"Gathering data...\n";
+        
+        std::cout <<"\033[1;1HGathering data...\n";
         generateTemp(s1);
         generateHuminity(s1);
         generateWindSpeed(s1);
@@ -84,25 +84,25 @@ void printStatitics(std::vector<sensor> &sensors)
     std::vector<float> averages = calcAverages(sensors);
 
 
-    std::cout << "\nAVERAGES\n"
-        << "Temp: " << averages[0] << std::endl
-        << "Speed: " << averages[1] << std::endl
-        << "Humidity: " << averages[2] << std::endl;
+    //std::cout << "\nAVERAGES\n"
+    std::cout <<"\033[6;1HAverage Temp: " << averages[0] << std::endl
+        << "\033[10;1HAverage WindSpeed: " << averages[1] << std::endl
+        << "\033[14;1HAverage Humidity: " << averages[2] << std::endl;
 
     std::vector<float> minValues = calcMinValues(sensors);
 
-    std::cout << "\nMIN VALUES\n"
-        << "Temp: " << minValues[0] <<" C" << std::endl
-        << "Speed: " << minValues[1] <<" m/ s"<< std::endl
-        << "Humidity: " << minValues[2] <<" %" << std::endl;
+    //std::cout << "\nMIN VALUES\n"
+    std::cout << "\033[7;1HMin Temp: " << minValues[0] <<" C" << std::endl
+        << "\033[11;1HMin WindSpeed: " << minValues[1] <<" m/ s"<< std::endl
+        << "\033[15;1HMin Humidity: " << minValues[2] <<" %" << std::endl;
 
 
     std::vector<float> maxValues = calcMaxValues(sensors);
 
-    std::cout << "\nMAX VALUES\n"
-        << "Temp: " << maxValues[0] <<" C" << std::endl
-        << "Speed: " << maxValues[1] <<" m/ s"<< std::endl
-        << "Humidity: " << maxValues[2] <<" %" << std::endl;
+    //std::cout << "\nMAX VALUES\n"
+    std::cout << "\033[8;1HMax Temp: " << maxValues[0] <<" C" << std::endl
+        << "\033[12;1HMax WindSpeed: " << maxValues[1] <<" m/ s"<< std::endl
+        << "\033[16;1HMax Humidity: " << maxValues[2] <<" %" << std::endl;
 
     }
 }
