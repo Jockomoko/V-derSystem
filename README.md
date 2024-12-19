@@ -6,8 +6,6 @@ V-derSystem is a sensor data management system. It collects and processes inform
 ## Build Instructions
 
 ### Prerequisites
-- CMake 3.31.2 or higher
-- Ninja build system
 - C++ Compiler
 
 ### Steps
@@ -18,18 +16,10 @@ V-derSystem is a sensor data management system. It collects and processes inform
     ```
 
 2. Create a build directory and navigate into it:
-    ```sh
-    mkdir build
     cd build
     ```
 
-
-3. Build the project:
-    ```sh
-    ninja
-    ```
-
-### Alternative
+### Build the project
 1. Use build script:
     ```sh
     bash ./build.sh
