@@ -16,7 +16,8 @@ V-derSystem is a sensor data management system. It collects and processes inform
     ```
 
 2. Create a build directory and navigate into it:
-    cd build
+    ```sh
+     cd build
     ```
 
 ### Build the project
