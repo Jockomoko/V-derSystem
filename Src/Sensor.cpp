@@ -1,5 +1,6 @@
 #include "../Includes/Sensor.h"
 // Getters
+
 float sensor::getTemp()
 {
     return temperature;
@@ -15,7 +16,8 @@ float sensor::getHumidity()
     return humidity;
 }
 
-// Setters
+// Setter
+
 void sensor::setTemp(float temp)
 {
     temperature = temp;

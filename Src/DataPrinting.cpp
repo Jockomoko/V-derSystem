@@ -3,14 +3,14 @@
 #include <iomanip>
 #include "../Includes/DataPrinting.h"
 
-/*Function that prints the calculated statitics every 10 seconds. 
+/*Function that prints the calculated statitics every 10 seconds.
 Uses ANSI escape codes so that only numbers that are chanching is updated. */
 void DataPrinting::printStatitics(std::vector<sensor> &sensors)
 {
     while (keepRunning)
     {
         std::this_thread::sleep_for(std::chrono::seconds(10));
-        std::vector<std::vector <float>> statitics = GeneratingData::generateStatistics(sensors);
+        std::vector<std::vector<float>> statitics = GeneratingData::generateStatistics(sensors);
         {
             std::lock_guard<std::mutex> cout_lock(cout_mutex);
             std::cout << "\033[6;1H\033[KTemperature Data:" << std::endl
@@ -26,7 +26,6 @@ void DataPrinting::printStatitics(std::vector<sensor> &sensors)
                       << "\033[16;1H\033[KMax: " << statitics[2][1] << " m/ s" << std::endl
                       << "\033[22;1H\033[KMax: " << statitics[2][2] << " %" << std::endl;
         }
-       
     }
 }
 
@@ -46,7 +45,6 @@ void DataPrinting::displayData(std::vector<sensor> &sensors)
         }
     }
 }
-
 void DataPrinting::printStaticText()
 {
     std::lock_guard<std::mutex> cout_lock(cout_mutex);
@@ -55,13 +53,13 @@ void DataPrinting::printStaticText()
               << "This program will gather data every 0.5 seconds and calculate statistics every 5 seconds.\n"
               << "The program will update the latest gathered data every 2 seconds and the statitics every 10 seconds.\n"
               << "\033[6;1H\033[KTemperature Data:"
-              <<std::fixed<<std::setprecision(1)
-              <<"\033[7;1H\033[KLatest temp: "
+              << std::fixed << std::setprecision(1)
+              << "\033[7;1H\033[KLatest temp: "
               << "\033[8;1H\033[KAverage: "
               << "\033[9;1H\033[KMin: "
               << "\033[10;1H\033[KMax: "
               << "\033[12;1H\033[KWind Speed Data:"
-              <<"\033[13;1H\033[KLatest WindSpeed: "
+              << "\033[13;1H\033[KLatest WindSpeed: "
               << "\033[14;1H\033[KAverage: "
               << "\033[15;1H\033[KMin: "
               << "\033[16;1H\033[KMax: "
@@ -72,7 +70,7 @@ void DataPrinting::printStaticText()
               << "\033[22;1H\033[KMax: ";
 }
 
-//Function that waits for a key press to stop the program.
+// Function that waits for a key press to stop the program.
 void DataPrinting::waitForPress()
 {
     std::cin.get();
@@ -82,5 +80,4 @@ void DataPrinting::waitForPress()
 void DataPrinting::goodbyeMessage()
 {
     std::cout << "\033[24;1H\033[KPress any key to exit program!";
-            
 }
